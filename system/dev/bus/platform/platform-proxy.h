@@ -7,6 +7,7 @@
 #include <ddktl/device.h>
 #include <ddktl/protocol/clk.h>
 #include <ddktl/protocol/gpio.h>
+#include <ddktl/protocol/i2c.h>
 #include <ddktl/protocol/platform-device.h>
 #include <ddktl/protocol/usb-mode-switch.h>
 #include <lib/zx/handle.h>
@@ -45,6 +46,11 @@ public:
     zx_status_t GpioGetInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle);
     zx_status_t GpioReleaseInterrupt(uint32_t index);
     zx_status_t GpioSetPolarity(uint32_t index, uint32_t polarity);
+
+    // I2C protocol implementation
+    zx_status_t I2cTransact(uint32_t index, const void* write_buf, size_t write_length,
+                            size_t read_length, i2c_complete_cb complete_cb, void* cookie);
+    zx_status_t I2cGetMaxTransferSize(uint32_t index, size_t* out_size);
 
     // USB mode switch protocol implementation
     zx_status_t SetUsbMode(usb_mode_t mode);

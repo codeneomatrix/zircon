@@ -10,7 +10,7 @@
 
 #include "gpio-internal.h"
 
-// DDK clock protocol support.
+// DDK GPIO protocol support.
 //
 // :: Proxies ::
 //
@@ -20,16 +20,16 @@
 // :: Mixins ::
 //
 // ddk::GpioProtocol is a mixin class that simplifies writing DDK drivers that
-// implement the clock protocol.
+// implement the GPIO protocol.
 //
 // :: Examples ::
 //
 // // A driver that implements a ZX_PROTOCOL_GPIO device.
-// class gpioDevice;
+// class GpioDevice;
 // using GpioDeviceType = ddk::Device<GpioDevice, /* ddk mixins */>;
 //
 // class GpioDevice : public GpioDeviceType,
-//                   public ddk::GpioProtocol<GpioDevice> {
+//                    public ddk::GpioProtocol<GpioDevice> {
 //   public:
 //     GpioDevice(zx_device_t* parent)
 //       : GpioDeviceType("my-gpio-device", parent) {}
