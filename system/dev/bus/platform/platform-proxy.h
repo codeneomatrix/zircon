@@ -8,6 +8,7 @@
 #include <ddktl/protocol/clk.h>
 #include <ddktl/protocol/gpio.h>
 #include <ddktl/protocol/i2c.h>
+#include <ddktl/protocol/mailbox.h>
 #include <ddktl/protocol/platform-device.h>
 #include <ddktl/protocol/usb-mode-switch.h>
 #include <lib/zx/handle.h>
@@ -18,7 +19,9 @@ class ProxyDevice;
 using ProxyDeviceType = ddk::Device<ProxyDevice>;
 
 class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>,
-                    ddk::ClkProtocol<ProxyDevice>, ddk::GpioProtocol<ProxyDevice>, ddk::UmsProtocol<ProxyDevice> {
+                    ddk::ClkProtocol<ProxyDevice>, ddk::GpioProtocol<ProxyDevice>,
+                    ddk::I2cProtocol<ProxyDevice>, ddk::MailboxProtocol<ProxyDevice>,
+                    ddk::UmsProtocol<ProxyDevice> {
 public:
     explicit ProxyDevice(zx_device_t* parent, zx_handle_t rpc_channel)
         : ProxyDeviceType(parent), rpc_channel_(rpc_channel) {}
@@ -51,6 +54,9 @@ public:
     zx_status_t I2cTransact(uint32_t index, const void* write_buf, size_t write_length,
                             size_t read_length, i2c_complete_cb complete_cb, void* cookie);
     zx_status_t I2cGetMaxTransferSize(uint32_t index, size_t* out_size);
+
+    // mailbox protocol implementation
+    zx_status_t MailboxSendCmd(mailbox_channel_t* channel, mailbox_data_buf_t* mdata);
 
     // USB mode switch protocol implementation
     zx_status_t SetUsbMode(usb_mode_t mode);

@@ -690,6 +690,19 @@ zx_status_t ProxyDevice::GpioSetPolarity(uint32_t index, uint32_t polarity) {
     return 0;
 }
 
+zx_status_t ProxyDevice::I2cTransact(uint32_t index, const void* write_buf, size_t write_length,
+                                     size_t read_length, i2c_complete_cb complete_cb, void* cookie) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::I2cGetMaxTransferSize(uint32_t index, size_t* out_size) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::MailboxSendCmd(mailbox_channel_t* channel, mailbox_data_buf_t* mdata) {
+    return 0;
+}
+
 zx_status_t ProxyDevice::SetUsbMode(usb_mode_t mode) {
     return 0;
 }
