@@ -662,6 +662,34 @@ zx_status_t ProxyDevice:: ClkDisable(uint32_t index) {
     return 0;
 }
 
+zx_status_t ProxyDevice::GpioConfig(uint32_t index, uint32_t flags) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GpioSetAltFunction(uint32_t index, uint64_t function) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GpioRead(uint32_t index, uint8_t* out_value) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GpioWrite(uint32_t index, uint8_t value) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GpioGetInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GpioReleaseInterrupt(uint32_t index) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GpioSetPolarity(uint32_t index, uint32_t polarity) {
+    return 0;
+}
+
 zx_status_t ProxyDevice::SetUsbMode(usb_mode_t mode) {
     return 0;
 }

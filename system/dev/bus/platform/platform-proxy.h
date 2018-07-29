@@ -6,6 +6,7 @@
 
 #include <ddktl/device.h>
 #include <ddktl/protocol/clk.h>
+#include <ddktl/protocol/gpio.h>
 #include <ddktl/protocol/platform-device.h>
 #include <ddktl/protocol/usb-mode-switch.h>
 #include <lib/zx/handle.h>
@@ -16,7 +17,7 @@ class ProxyDevice;
 using ProxyDeviceType = ddk::Device<ProxyDevice>;
 
 class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>,
-                    ddk::ClkProtocol<ProxyDevice>, ddk::UmsProtocol<ProxyDevice> {
+                    ddk::ClkProtocol<ProxyDevice>, ddk::GpioProtocol<ProxyDevice>, ddk::UmsProtocol<ProxyDevice> {
 public:
     explicit ProxyDevice(zx_device_t* parent, zx_handle_t rpc_channel)
         : ProxyDeviceType(parent), rpc_channel_(rpc_channel) {}
@@ -35,6 +36,15 @@ public:
     // clock protocol implementation
     zx_status_t ClkEnable(uint32_t index);
     zx_status_t ClkDisable(uint32_t index);
+
+    // GPIO protocol implementation
+    zx_status_t GpioConfig(uint32_t index, uint32_t flags);
+    zx_status_t GpioSetAltFunction(uint32_t index, uint64_t function);
+    zx_status_t GpioRead(uint32_t index, uint8_t* out_value);
+    zx_status_t GpioWrite(uint32_t index, uint8_t value);
+    zx_status_t GpioGetInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle);
+    zx_status_t GpioReleaseInterrupt(uint32_t index);
+    zx_status_t GpioSetPolarity(uint32_t index, uint32_t polarity);
 
     // USB mode switch protocol implementation
     zx_status_t SetUsbMode(usb_mode_t mode);
