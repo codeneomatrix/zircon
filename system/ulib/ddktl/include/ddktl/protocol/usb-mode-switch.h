@@ -34,7 +34,7 @@
 //     UmsDevice(zx_device_t* parent)
 //       : UmsDeviceType("my-usb-mode-switch-device", parent) {}
 //
-//        zx_status_t SetMode(usb_mode_t mode);
+//        zx_status_t SetUsbMode(usb_mode_t mode);
 //     ...
 // };
 
@@ -45,15 +45,15 @@ class UmsProtocol {
 public:
     UmsProtocol() {
         internal::CheckUmsProtocolSubclass<D>();
-        ums_proto_ops_.set_mode = SetMode;
+        ums_proto_ops_.set_mode = SetUsbMode;
     }
 
 protected:
     usb_mode_switch_protocol_ops_t ums_proto_ops_ = {};
 
 private:
-    static zx_status_t SetMode(void* ctx, usb_mode_t mode) {
-        return static_cast<D*>(ctx)->SetMode(mode);
+    static zx_status_t SetUsbMode(void* ctx, usb_mode_t mode) {
+        return static_cast<D*>(ctx)->SetUsbMode(mode);
     }
 };
 
@@ -62,7 +62,7 @@ public:
     UmsProtocolProxy(usb_mode_switch_protocol_t* proto)
         : ops_(proto->ops), ctx_(proto->ctx) {}
 
-    zx_status_t SetMode(usb_mode_t mode) {
+    zx_status_t SetUsbMode(usb_mode_t mode) {
         return ops_->set_mode(ctx_, mode);
     }
 

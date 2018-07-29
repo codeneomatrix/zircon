@@ -654,7 +654,15 @@ zx_status_t ProxyDevice::GetDeviceInfo(pdev_device_info_t* out_info) {
     return 0;
 }
 
-zx_status_t ProxyDevice::SetMode(usb_mode_t mode) {
+zx_status_t ProxyDevice::ClkEnable(uint32_t index) {
+    return 0;
+}
+
+zx_status_t ProxyDevice:: ClkDisable(uint32_t index) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::SetUsbMode(usb_mode_t mode) {
     return 0;
 }
 

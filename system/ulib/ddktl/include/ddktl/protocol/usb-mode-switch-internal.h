@@ -9,14 +9,14 @@
 namespace ddk {
 namespace internal {
 
-DECLARE_HAS_MEMBER_FN_WITH_SIGNATURE(has_set_mode, SetMode,
+DECLARE_HAS_MEMBER_FN_WITH_SIGNATURE(has_set_usb_mode, SetUsbMode,
         zx_status_t (C::*)(usb_mode_t));
 
 template <typename D>
 constexpr void CheckUmsProtocolSubclass() {
-    static_assert(internal::has_set_mode<D>::value,
+    static_assert(internal::has_set_usb_mode<D>::value,
                   "UmsProtocol subclasses must implement "
-                  "SetMode(usb_mode_t mode)");
+                  "SetUsbMode(usb_mode_t mode)");
  }
 
 }  // namespace internal
