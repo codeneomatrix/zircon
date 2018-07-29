@@ -6,6 +6,7 @@
 
 #include <ddktl/device.h>
 #include <ddktl/protocol/platform-device.h>
+#include <ddktl/protocol/usb-mode-switch.h>
 #include <lib/zx/handle.h>
 
 namespace platform_bus {
@@ -13,7 +14,7 @@ namespace platform_bus {
 class ProxyDevice;
 using ProxyDeviceType = ddk::Device<ProxyDevice>;
 
-class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>  {
+class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>, ddk::UmsProtocol<ProxyDevice> {
 public:
     explicit ProxyDevice(zx_device_t* parent, zx_handle_t rpc_channel)
         : ProxyDeviceType(parent), rpc_channel_(rpc_channel) {}
@@ -28,6 +29,9 @@ public:
     zx_status_t MapInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle);
     zx_status_t GetBti(uint32_t index, zx_handle_t* out_handle);
     zx_status_t GetDeviceInfo(pdev_device_info_t* out_info);
+
+    // USB mode switch protocol implementation
+    zx_status_t SetMode(usb_mode_t mode);
 
 private:
     DISALLOW_COPY_ASSIGN_AND_MOVE(ProxyDevice);

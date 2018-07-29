@@ -654,6 +654,10 @@ zx_status_t ProxyDevice::GetDeviceInfo(pdev_device_info_t* out_info) {
     return 0;
 }
 
+zx_status_t ProxyDevice::SetMode(usb_mode_t mode) {
+    return 0;
+}
+
 } // namespace platform_bus
 
 zx_status_t platform_proxy_create(void* ctx, zx_device_t* parent, const char* name,
