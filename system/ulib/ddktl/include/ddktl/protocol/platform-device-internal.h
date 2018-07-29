@@ -10,14 +10,13 @@ namespace ddk {
 namespace internal {
 
 DECLARE_HAS_MEMBER_FN_WITH_SIGNATURE(has_map_mmio, MapMmio,
-                                     void (C::*)(uint32_t, uint32_t, void**, size_t*, zx_paddr_t*,
-                                                 zx_handle_t*));
+        zx_status_t (C::*)(uint32_t, uint32_t, void**, size_t*, zx_paddr_t*, zx_handle_t*));
 DECLARE_HAS_MEMBER_FN_WITH_SIGNATURE(has_map_interrupt, MapInterrupt,
-                                     void (C::*)(uint32_t, uint32_t, zx_handle_t*));
+        zx_status_t (C::*)(uint32_t, uint32_t, zx_handle_t*));
 DECLARE_HAS_MEMBER_FN_WITH_SIGNATURE(has_get_bti, GetBti,
-                                     void (C::*)(uint32_t, zx_handle_t*));
+        zx_status_t (C::*)(uint32_t, zx_handle_t*));
 DECLARE_HAS_MEMBER_FN_WITH_SIGNATURE(has_get_device_info, GetDeviceInfo,
-                                     void (C::*)(pdev_device_info_t*));
+        zx_status_t (C::*)(pdev_device_info_t*));
 
 template <typename D>
 constexpr void CheckPdevProtocolSubclass() {

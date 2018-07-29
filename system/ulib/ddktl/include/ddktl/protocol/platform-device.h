@@ -34,10 +34,11 @@
 //     PdevDevice(zx_device_t* parent)
 //       : PdevDeviceType("my-platform-device", parent) {}
 //
-//     void Query(nand_info_t* info_out, size_t* nand_op_size_out);
-//     void Queue(nand_op_t* operation);
-//     zx_status_t GetFactoryBadBlockList(uint32_t* bad_blocks, uint32_t bad_block_len,
-//                                        uint32_t* num_bad_blocks);
+//        zx_status_t MapMmio(uint32_t index, uint32_t cache_policy, void** out_vaddr, size_t* out_size,
+//                            zx_paddr_t* out_paddr, zx_handle_t* out_handle);
+//        zx_status_t MapInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle);
+//        zx_status_t GetBti(uint32_t index, zx_handle_t* out_handle);
+//        zx_status_t GetDeviceInfo(pdev_device_info_t* out_info);
 //     ...
 // };
 
@@ -82,7 +83,6 @@ private:
     }
 };
 
-/*
 class PdevProtocolProxy {
 public:
     PdevProtocolProxy(platform_device_protocol_t* proto)
@@ -109,6 +109,5 @@ private:
     platform_device_protocol_ops_t* ops_;
     void* ctx_;
 };
-*/
 
 } // namespace ddk

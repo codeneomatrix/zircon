@@ -637,6 +637,23 @@ void ProxyDevice::DdkRelease() {
     delete this;
 }
 
+zx_status_t ProxyDevice::MapMmio(uint32_t index, uint32_t cache_policy, void** out_vaddr,
+                                 size_t* out_size, zx_paddr_t* out_paddr, zx_handle_t* out_handle) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::MapInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GetBti(uint32_t index, zx_handle_t* out_handle) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::GetDeviceInfo(pdev_device_info_t* out_info) {
+    return 0;
+}
+
 } // namespace platform_bus
 
 zx_status_t platform_proxy_create(void* ctx, zx_device_t* parent, const char* name,
