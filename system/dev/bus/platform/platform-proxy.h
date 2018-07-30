@@ -15,6 +15,8 @@
 #include <ddktl/protocol/usb-mode-switch.h>
 #include <lib/zx/handle.h>
 
+#include "proxy-protocol.h"
+
 namespace platform_bus {
 
 class ProxyDevice;
@@ -77,6 +79,11 @@ public:
 
     // USB mode switch protocol implementation
     zx_status_t SetUsbMode(usb_mode_t mode);
+
+private:
+    zx_status_t Rpc(pdev_req_t* req, uint32_t req_length, pdev_resp_t* resp, uint32_t resp_length,
+                    zx_handle_t* in_handles, uint32_t in_handle_count, zx_handle_t* out_handles,
+                    uint32_t out_handle_count, uint32_t* out_data_received);
 
 private:
     DISALLOW_COPY_ASSIGN_AND_MOVE(ProxyDevice);

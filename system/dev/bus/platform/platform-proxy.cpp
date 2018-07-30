@@ -18,18 +18,18 @@
 #include <fbl/unique_ptr.h>
 
 #include "platform-proxy.h"
-#include "proxy-protocol.h"
 
 typedef struct {
     zx_device_t* zxdev;
     zx_handle_t rpc_channel;
 } platform_proxy_t;
 
-static zx_status_t platform_dev_rpc(platform_proxy_t* proxy, pdev_req_t* req, uint32_t req_length,
-                                    pdev_resp_t* resp, uint32_t resp_length,
-                                    zx_handle_t* in_handles, uint32_t in_handle_count,
-                                    zx_handle_t* out_handles, uint32_t out_handle_count,
-                                    uint32_t* out_data_received) {
+namespace platform_bus {
+
+zx_status_t ProxyDevice::Rpc(pdev_req_t* req, uint32_t req_length, pdev_resp_t* resp,
+                             uint32_t resp_length, zx_handle_t* in_handles,
+                             uint32_t in_handle_count, zx_handle_t* out_handles,
+                             uint32_t out_handle_count, uint32_t* out_data_received) {
     uint32_t resp_size, handle_count;
 
     zx_channel_call_args_t args = {
@@ -42,7 +42,7 @@ static zx_status_t platform_dev_rpc(platform_proxy_t* proxy, pdev_req_t* req, ui
         .rd_num_bytes = resp_length,
         .rd_num_handles = out_handle_count,
     };
-    zx_status_t status = zx_channel_call(proxy->rpc_channel, 0, ZX_TIME_INFINITE, &args, &resp_size,
+    zx_status_t status = zx_channel_call(rpc_channel_.get(), 0, ZX_TIME_INFINITE, &args, &resp_size,
                                          &handle_count);
     if (status != ZX_OK) {
         return status;
@@ -71,6 +71,7 @@ fail:
     return status;
 }
 
+#if 0
 static zx_status_t pdev_ums_set_mode(void* ctx, usb_mode_t mode) {
     platform_proxy_t* proxy = static_cast<platform_proxy_t*>(ctx);
     pdev_req_t req = {};
@@ -528,7 +529,7 @@ static zx_status_t platform_dev_get_device_info(void* ctx, pdev_device_info_t* o
     return ZX_OK;
 }
 
-namespace platform_bus {
+#endif
 
 zx_status_t ProxyDevice::Create(const char* name) {
     return DdkAdd(name);
