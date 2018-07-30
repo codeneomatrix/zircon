@@ -11,6 +11,7 @@
 #include <ddktl/protocol/i2c.h>
 #include <ddktl/protocol/mailbox.h>
 #include <ddktl/protocol/platform-device.h>
+#include <ddktl/protocol/scpi.h>
 #include <ddktl/protocol/usb-mode-switch.h>
 #include <lib/zx/handle.h>
 
@@ -22,7 +23,8 @@ using ProxyDeviceType = ddk::Device<ProxyDevice>;
 class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>,
                     ddk::CanvasProtocol<ProxyDevice>, ddk::ClkProtocol<ProxyDevice>,
                     ddk::GpioProtocol<ProxyDevice>, ddk::I2cProtocol<ProxyDevice>,
-                    ddk::MailboxProtocol<ProxyDevice>, ddk::UmsProtocol<ProxyDevice> {
+                    ddk::MailboxProtocol<ProxyDevice>, ddk::ScpiProtocol<ProxyDevice>,
+                    ddk::UmsProtocol<ProxyDevice> {
 public:
     explicit ProxyDevice(zx_device_t* parent, zx_handle_t rpc_channel)
         : ProxyDeviceType(parent), rpc_channel_(rpc_channel) {}
@@ -62,6 +64,13 @@ public:
 
     // mailbox protocol implementation
     zx_status_t MailboxSendCmd(mailbox_channel_t* channel, mailbox_data_buf_t* mdata);
+
+    // SCPI protocol implementation
+    zx_status_t ScpiGetSensor(const char* name, uint32_t* sensor_value);
+    zx_status_t ScpiGetSensorValue(uint32_t sensor_id, uint32_t* sensor_value);
+    zx_status_t ScpiGetDvfsInfo(uint8_t power_domain, scpi_opp_t* opps);
+    zx_status_t ScpiGetDvfsIdx(uint8_t power_domain, uint16_t* idx);
+    zx_status_t ScpiSetDvfsIdx(uint8_t power_domain, uint16_t idx);
 
     // USB mode switch protocol implementation
     zx_status_t SetUsbMode(usb_mode_t mode);

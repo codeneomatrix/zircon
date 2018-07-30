@@ -29,7 +29,7 @@
 // using CanvasDeviceType = ddk::Device<CanvasDevice, /* ddk mixins */>;
 //
 // class CanvasDevice : public CanvasDeviceType,
-//                   public ddk::CanvasProtocol<CanvasDevice> {
+//                      public ddk::CanvasProtocol<CanvasDevice> {
 //   public:
 //     CanvasDevice(zx_device_t* parent)
 //       : CanvasDeviceType("my-canvas-device", parent) {}

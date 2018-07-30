@@ -712,6 +712,26 @@ zx_status_t ProxyDevice::MailboxSendCmd(mailbox_channel_t* channel, mailbox_data
     return 0;
 }
 
+zx_status_t ProxyDevice::ScpiGetSensor(const char* name, uint32_t* sensor_value) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::ScpiGetSensorValue(uint32_t sensor_id, uint32_t* sensor_value) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::ScpiGetDvfsInfo(uint8_t power_domain, scpi_opp_t* opps) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::ScpiGetDvfsIdx(uint8_t power_domain, uint16_t* idx) {
+    return 0;
+}
+
+zx_status_t ProxyDevice::ScpiSetDvfsIdx(uint8_t power_domain, uint16_t idx) {
+    return 0;
+}
+
 zx_status_t ProxyDevice::SetUsbMode(usb_mode_t mode) {
     return 0;
 }
