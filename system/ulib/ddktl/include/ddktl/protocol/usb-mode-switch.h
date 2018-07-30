@@ -45,11 +45,11 @@ class UmsProtocol {
 public:
     UmsProtocol() {
         internal::CheckUmsProtocolSubclass<D>();
-        ums_proto_ops_.set_mode = SetUsbMode;
+        usb_mode_switch_proto_ops_.set_mode = SetUsbMode;
     }
 
 protected:
-    usb_mode_switch_protocol_ops_t ums_proto_ops_ = {};
+    usb_mode_switch_protocol_ops_t usb_mode_switch_proto_ops_ = {};
 
 private:
     static zx_status_t SetUsbMode(void* ctx, usb_mode_t mode) {

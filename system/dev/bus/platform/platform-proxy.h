@@ -18,7 +18,7 @@
 namespace platform_bus {
 
 class ProxyDevice;
-using ProxyDeviceType = ddk::Device<ProxyDevice>;
+using ProxyDeviceType = ddk::Device<ProxyDevice, ddk::GetProtocolable>;
 
 class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>,
                     ddk::CanvasProtocol<ProxyDevice>, ddk::ClkProtocol<ProxyDevice>,
@@ -31,6 +31,9 @@ public:
 
     zx_status_t Create(const char* name);
 
+
+    // device protocol implementation
+    zx_status_t DdkGetProtocol(uint32_t proto_id, void* out);
     void DdkRelease();
 
     // platform device protocol implementation

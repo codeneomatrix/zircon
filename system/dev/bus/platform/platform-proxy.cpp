@@ -172,16 +172,6 @@ static zx_status_t pdev_gpio_write(void* ctx, uint32_t index, uint8_t value) {
                             nullptr);
 }
 
-static gpio_protocol_ops_t gpio_ops = {
-    .config = pdev_gpio_config,
-    .set_alt_function = pdev_gpio_set_alt_function,
-    .read = pdev_gpio_read,
-    .write = pdev_gpio_write,
-    .get_interrupt = pdev_gpio_get_interrupt,
-    .release_interrupt = pdev_gpio_release_interrupt,
-    .set_polarity = pdev_gpio_set_polarity,
-};
-
 static zx_status_t pdev_scpi_get_sensor_value(void* ctx, uint32_t sensor_id,
                                          uint32_t* sensor_value) {
     platform_proxy_t* proxy = static_cast<platform_proxy_t*>(ctx);
@@ -263,14 +253,6 @@ static zx_status_t pdev_scpi_set_dvfs_idx(void* ctx, uint8_t power_domain,
                             nullptr, 0, nullptr, 0, nullptr);
 }
 
-static scpi_protocol_ops_t scpi_ops = {
-    .get_sensor = pdev_scpi_get_sensor,
-    .get_sensor_value = pdev_scpi_get_sensor_value,
-    .get_dvfs_info = pdev_scpi_get_dvfs_info,
-    .get_dvfs_idx = pdev_scpi_get_dvfs_idx,
-    .set_dvfs_idx = pdev_scpi_set_dvfs_idx,
-};
-
 static zx_status_t pdev_mailbox_send_cmd(void* ctx, mailbox_channel_t* channel,
                                          mailbox_data_buf_t* mdata) {
     platform_proxy_t* proxy = static_cast<platform_proxy_t*>(ctx);
@@ -322,10 +304,6 @@ fail:
     return status;
 }
 
-static mailbox_protocol_ops_t mailbox_ops = {
-    .send_cmd = pdev_mailbox_send_cmd,
-};
-
 static zx_status_t pdev_canvas_config(void* ctx, zx_handle_t vmo,
                                       size_t offset, canvas_info_t* info,
                                       uint8_t* canvas_idx) {
@@ -356,11 +334,6 @@ static zx_status_t pdev_canvas_free(void* ctx, uint8_t canvas_idx) {
     return platform_dev_rpc(proxy, &req, sizeof(req), &resp, sizeof(resp),
                             nullptr, 0, nullptr, 0, nullptr);
 }
-
-static canvas_protocol_ops_t canvas_ops = {
-    .config = pdev_canvas_config,
-    .free = pdev_canvas_free,
-};
 
 static zx_status_t pdev_i2c_get_max_transfer_size(void* ctx, uint32_t index, size_t* out_size) {
     platform_proxy_t* proxy = static_cast<platform_proxy_t*>(ctx);
@@ -443,11 +416,6 @@ static void pdev_i2c_channel_release(void* ctx) {
     free(ctx);
 }
 
-static i2c_protocol_ops_t i2c_ops = {
-    .transact = pdev_i2c_transact,
-    .get_max_transfer_size = pdev_i2c_get_max_transfer_size,
-};
-
 static zx_status_t pdev_clk_enable(void* ctx, uint32_t index) {
     platform_proxy_t* proxy = static_cast<platform_proxy_t*>(ctx);
     pdev_req_t req = {};
@@ -469,11 +437,6 @@ static zx_status_t pdev_clk_disable(void* ctx, uint32_t index) {
     return platform_dev_rpc(proxy, &req, sizeof(req), &resp, sizeof(resp),
                             nullptr, 0, nullptr, 0, nullptr);
 }
-
-static clk_protocol_ops_t clk_ops = {
-    .enable = pdev_clk_enable,
-    .disable = pdev_clk_disable,
-};
 
 static zx_status_t platform_dev_map_mmio(void* ctx, uint32_t index, uint32_t cache_policy,
                                          void** vaddr, size_t* size, zx_paddr_t* out_paddr,
@@ -565,72 +528,65 @@ static zx_status_t platform_dev_get_device_info(void* ctx, pdev_device_info_t* o
     return ZX_OK;
 }
 
-static platform_device_protocol_ops_t platform_dev_proto_ops = {
-    .map_mmio = platform_dev_map_mmio,
-    .map_interrupt = platform_dev_map_interrupt,
-    .get_bti = platform_dev_get_bti,
-    .get_device_info = platform_dev_get_device_info,
-};
+namespace platform_bus {
 
-static zx_status_t platform_dev_get_protocol(void* ctx, uint32_t proto_id, void* out) {
+zx_status_t ProxyDevice::Create(const char* name) {
+    return DdkAdd(name);
+}
+
+zx_status_t ProxyDevice::DdkGetProtocol(uint32_t proto_id, void* out) {
     switch (proto_id) {
     case ZX_PROTOCOL_PLATFORM_DEV: {
-        platform_device_protocol_t* proto = static_cast<platform_device_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &platform_dev_proto_ops;
+        auto proto = static_cast<platform_device_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &pdev_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_USB_MODE_SWITCH: {
-        usb_mode_switch_protocol_t* proto = static_cast<usb_mode_switch_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &usb_mode_switch_ops;
+        auto proto = static_cast<usb_mode_switch_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &usb_mode_switch_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_GPIO: {
-        gpio_protocol_t* proto = static_cast<gpio_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &gpio_ops;
+        auto proto = static_cast<gpio_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &gpio_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_I2C: {
-        i2c_protocol_t* proto = static_cast<i2c_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &i2c_ops;
+        auto proto = static_cast<i2c_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &i2c_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_CLK: {
-        clk_protocol_t* proto = static_cast<clk_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &clk_ops;
+        auto proto = static_cast<clk_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &clk_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_MAILBOX: {
-        mailbox_protocol_t* proto = static_cast<mailbox_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &mailbox_ops;
+        auto proto = static_cast<mailbox_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &mailbox_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_SCPI: {
-        scpi_protocol_t* proto = static_cast<scpi_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &scpi_ops;
+        auto proto = static_cast<scpi_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &scpi_proto_ops_;
         return ZX_OK;
     }
     case ZX_PROTOCOL_CANVAS: {
-        canvas_protocol_t* proto = static_cast<canvas_protocol_t*>(out);
-        proto->ctx = ctx;
-        proto->ops = &canvas_ops;
+        auto proto = static_cast<canvas_protocol_t*>(out);
+        proto->ctx = this;
+        proto->ops = &canvas_proto_ops_;
         return ZX_OK;
     }
     default:
         return ZX_ERR_NOT_SUPPORTED;
     }
-}
-
-namespace platform_bus {
-
-zx_status_t ProxyDevice::Create(const char* name) {
-    return DdkAdd(name);
 }
 
 void ProxyDevice::DdkRelease() {
