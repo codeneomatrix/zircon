@@ -5,6 +5,7 @@
 #pragma once
 
 #include <ddktl/device.h>
+#include <ddktl/protocol/canvas.h>
 #include <ddktl/protocol/clk.h>
 #include <ddktl/protocol/gpio.h>
 #include <ddktl/protocol/i2c.h>
@@ -19,9 +20,9 @@ class ProxyDevice;
 using ProxyDeviceType = ddk::Device<ProxyDevice>;
 
 class ProxyDevice : public ProxyDeviceType, public ddk::PdevProtocol<ProxyDevice>,
-                    ddk::ClkProtocol<ProxyDevice>, ddk::GpioProtocol<ProxyDevice>,
-                    ddk::I2cProtocol<ProxyDevice>, ddk::MailboxProtocol<ProxyDevice>,
-                    ddk::UmsProtocol<ProxyDevice> {
+                    ddk::CanvasProtocol<ProxyDevice>, ddk::ClkProtocol<ProxyDevice>,
+                    ddk::GpioProtocol<ProxyDevice>, ddk::I2cProtocol<ProxyDevice>,
+                    ddk::MailboxProtocol<ProxyDevice>, ddk::UmsProtocol<ProxyDevice> {
 public:
     explicit ProxyDevice(zx_device_t* parent, zx_handle_t rpc_channel)
         : ProxyDeviceType(parent), rpc_channel_(rpc_channel) {}
@@ -36,6 +37,10 @@ public:
     zx_status_t MapInterrupt(uint32_t index, uint32_t flags, zx_handle_t* out_handle);
     zx_status_t GetBti(uint32_t index, zx_handle_t* out_handle);
     zx_status_t GetDeviceInfo(pdev_device_info_t* out_info);
+
+    // canvas protocol implementation
+    zx_status_t CanvasConfig(zx_handle_t vmo, size_t offset, canvas_info_t* info, uint8_t* canvas_idx);
+    zx_status_t CanvasFree(uint8_t canvas_idx);
 
     // clock protocol implementation
     zx_status_t ClkEnable(uint32_t index);
